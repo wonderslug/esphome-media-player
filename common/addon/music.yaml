@@ -13,7 +13,7 @@ globals:
 external_components:
   - source:
       type: git
-      url: https://github.com/jtenniswood/esphome-media-player
+      url: https://github.com/wonderslug/esphome-media-player
       ref: main
       path: components
     components: [artwork_image]
