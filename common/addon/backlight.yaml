@@ -352,6 +352,28 @@ switch:
             value: '0'
         - script.execute: backlight_wake_timeout
 
+  - platform: template
+    name: "Screen Saver: 24-Hour Clock"
+    id: clock_24h_enabled
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    icon: "mdi:clock-digital"
+    entity_category: config
+    on_turn_on:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(is_clock_showing);'
+            then:
+              - script.execute: show_clock_view
+    on_turn_off:
+      then:
+        - if:
+            condition:
+              lambda: 'return id(is_clock_showing);'
+            then:
+              - script.execute: show_clock_view
+
 select:
   - platform: template
     name: "Screen: Day Idle Action"
@@ -384,20 +406,6 @@ select:
       - "Disabled"
     on_value:
       - script.execute: refresh_idle_screen_timer
-
-  - platform: template
-    name: "Screen Saver: 24-Hour Clock"
-    id: clock_24h_enabled
-    optimistic: true
-    restore_mode: RESTORE_DEFAULT_ON
-    icon: "mdi:clock-digital"
-    entity_category: config
-    on_state:
-      - if:
-          condition:
-            lambda: 'return id(is_clock_showing);'
-          then:
-            - script.execute: show_clock_view
 
 
 # -----------------------------------------------------------------------------
