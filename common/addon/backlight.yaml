@@ -352,28 +352,6 @@ switch:
             value: '0'
         - script.execute: backlight_wake_timeout
 
-  - platform: template
-    name: "Screen Saver: 24-Hour Clock"
-    id: clock_24h_enabled
-    optimistic: true
-    restore_mode: RESTORE_DEFAULT_ON
-    icon: "mdi:clock-digital"
-    entity_category: config
-    on_turn_on:
-      then:
-        - if:
-            condition:
-              lambda: 'return id(is_clock_showing);'
-            then:
-              - script.execute: show_clock_view
-    on_turn_off:
-      then:
-        - if:
-            condition:
-              lambda: 'return id(is_clock_showing);'
-            then:
-              - script.execute: show_clock_view
-
 select:
   - platform: template
     name: "Screen: Day Idle Action"
@@ -807,6 +785,16 @@ script:
           int ox = (minute * 7) % 25 - 12;
           int oy = (minute * 13) % 17 - 8;
           lv_obj_set_pos(id(clock_label), cx + ox - w/2, cy + oy - h/2);
+          if (id(clock_time_format).current_option() == "12 Hour" && time.is_valid()) {
+            lv_label_set_text(id(am_pm_label), time.hour < 12 ? "AM" : "PM");
+            lv_obj_clear_flag(id(am_pm_label), LV_OBJ_FLAG_HIDDEN);
+            lv_obj_update_layout(id(am_pm_label));
+            lv_coord_t pw = lv_obj_get_width(id(am_pm_label));
+            lv_coord_t ph = lv_obj_get_height(id(am_pm_label));
+            lv_obj_set_pos(id(am_pm_label), cx + ox + w/2 - pw, cy + oy + h/2 - ph);
+          } else {
+            lv_obj_add_flag(id(am_pm_label), LV_OBJ_FLAG_HIDDEN);
+          }
           lv_obj_invalidate(id(clock_screensaver));
           lv_obj_invalidate(id(clock_label));
 
